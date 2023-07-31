@@ -1,0 +1,44 @@
+---
+- hosts: localhost
+  name: Play Create VM from template
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Create & Run VM instance VMWARE
+      community.vmware.vmware_guest:
+        hostname: "{{ vmw_hostname }}"
+        username: "{{ vmw_username }}"
+        password: "{{ vmw_password }}"
+        validate_certs: False
+        name: "{{ vmw_instance_name }}"
+        template: "{{ vmw_template_name }}"
+        datacenter: "{{ vmw_datacenter_name }}"
+        folder: "{{ vmw_folder_path }}"
+        state: poweredon
+        cluster: "{{ vmw_cluster_name }}"
+        # annotation: "{{ vmw_Justification | default(omit) }}"
+        wait_for_ip_address: "{{ vmw_wait_tools | default(omit) }}"
+        wait_for_customization: "{{ vmw_wait_custo | default(omit) }}"
+        customization:
+          dns_servers: "{{ vmw_dns_servers | default(omit) }}"
+          dns_suffix: "{{ vmw_dns_suffixes | default(omit) }}"
+          hostname: "{{ vmw_sys_hostname | default(omit) }}"
+          fullname: "{{ vmw_win_adminuser | default(omit) }}"
+          password: "{{ vmw_win_adminpasswd | default(omit) }}"
+        datastore: "{{ vmw_datastore }}"
+        hardware:
+          memory_mb: "{{ vmw_memory_mb | default(omit) }}"
+          num_cpus: "{{ vmw_vcpu | default(omit) }}"
+          num_cpu_cores_per_socket: "{{ vmw_vcpu_socket | default(omit) }}"
+        networks:
+        - name: "{{ vmw_network_name }}"
+          start_connected: "{{ vmw_connect_network | default(omit) }}"
+          ip: "{{ vmw_ip | default(omit) }}"
+          netmask: "{{ vmw_netmask | default(omit) }}"
+          gateway: "{{ vmw_gateway | default(omit) }}"
+        disk:
+        - size_gb: "{{ vmw_disk_size }}"
+          type: "{{ vmw_disk_type }}"
+          datastore: "{{ vmw_disk_datastore }}"
+      delegate_to: localhost
+      register: create_instance_task
